@@ -5,7 +5,7 @@ project(svm_test)
 # The library prefix
 SET(LIB_PREFIX _svm_test)
 
-set(CMAKE_CXX_FLAGS "-g -Wall")
+set(CMAKE_CXX_FLAGS "-g -Wall -std=c++11")
 
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${svm_test_SOURCE_DIR}/bin)
 

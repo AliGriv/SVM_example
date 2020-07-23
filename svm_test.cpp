@@ -15,35 +15,52 @@ struct svm_node *x_space;
 
 vector<int> generateLabels(int labelsSize)
 {
-	std::vector<int> labels;
-	for (int i=0; i<labelsSize; ++i)
-	{
-		labels.push_back(i%2+1);
-	}
-	return labels;
+	std::vector<int> labels_1 (labelsSize/2, 1);
+	std::vector<int> labels_2 (labelsSize/2, -1);
+	labels_1.insert(
+      labels_1.end(),
+      labels_2.begin(),
+      labels_2.end()
+    );
+	// std::vector<int> labels
+	// for (int i=0; i<labelsSize; ++i)
+	// {
+	// 	labels.push_back(i%2+1);
+	// }
+	
+	return labels_1;
 }
 
 vector<vector<double> > generateData(int problemSize, int featureNum)
 {
-	std::vector<std::vector<double> > data;
-	for (int i=0; i<problemSize; ++i)
-	{
-		std::vector<double> featureSet;
-		for (int j=0; j<featureNum; ++j)
-		{
-			cout<<"feature pushed"<<endl;
-			featureSet.push_back(j);
-		}
-		data.push_back(featureSet);
-	}
+
+	std::vector<std::vector<double> > data {{2.0,1.0,1.0},
+											{4.0,1.0,1.0},
+											{4.0,-1.0,1.0},
+											{2.0,-1.0,1.0},
+											{1.0,2.0,1.0},
+											{1.0,4.0,1.0},
+											{-1.0,4.0,1.0},
+											{-1.0,2.0,1.0}};
+	
+	// for (int i=0; i<problemSize; ++i)
+	// {
+	// 	std::vector<double> featureSet;
+	// 	for (int j=0; j<featureNum; ++j)
+	// 	{
+	// 		cout<<"feature pushed"<<endl;
+	// 		featureSet.push_back(j);
+	// 	}
+	// 	data.push_back(featureSet);
+	// }
 	return data;
 }
 
 int main()
 {
 	//here I will create a small artificial problem just for illustration
-	int sizeOfProblem = 30; //number of lines with labels
-	int elements = 10; //number of features for each data vector
+	int sizeOfProblem = 4*2; //number of lines with labels, (= 30)
+	int elements = 3; //number of features for each data vector (= 10)
 
 	vector<vector<double> > data = generateData(sizeOfProblem,elements);
 	vector<int> labels = generateLabels(sizeOfProblem);
@@ -107,10 +124,10 @@ int main()
 
 	//set all default parameters for param struct
 	param.svm_type = C_SVC;
-	param.kernel_type = RBF;
-	param.degree = 3;
-	param.gamma = 0;	// 1/num_features
-	param.coef0 = 0;
+	param.kernel_type = LINEAR;
+	//param.degree = 3;
+	//param.gamma = 0;	// 1/num_features
+	//param.coef0 = 0;
 	param.nu = 0.5;
 	param.cache_size = 100;
 	param.C = 1;
@@ -124,7 +141,19 @@ int main()
 
 	//try to actually execute it
 	model = svm_train(&prob, &param);
-
-
+	
+	double b = model->rho[0];
+	cout << "b is: " << b << endl;
+	double w [3];
+	for(int j=0;j<3;j++) { 
+      		double acc=0;
+      		for(int i=0;i<model->l;i++) {  
+        		acc += model->SV[i][j].value * model->sv_coef[0][i];
+      		}
+      		w[j]= -acc;
+    	}
+	cout << w[0] << endl;
+	cout << w[1] << endl;
+	cout << w[2] << endl;
 	return 0;
 }
